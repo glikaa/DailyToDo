@@ -1,4 +1,4 @@
-package com.example.dashboard;
+package com.example.tasks;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RestController;
 @SpringBootApplication(exclude = { DataSourceAutoConfiguration.class })
 
 @RestController
-public class DashboardApplication {
+public class TaskApplication {
     public static void main(String[] args) {
-      SpringApplication.run(DashboardApplication.class, args);
+      SpringApplication.run(TaskApplication.class, args);
     }
     @GetMapping("/hello")
     public String hello(@RequestParam(value = "name", defaultValue = "World") String name) {
