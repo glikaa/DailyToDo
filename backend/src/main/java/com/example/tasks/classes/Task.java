@@ -29,7 +29,8 @@ public class Task {
     @Column(name = "Status", nullable = false, length = 50)
     private String status;
 
-    @Column(name = "CreateTime")
+    @Column(name = "CreateTime", nullable = false, updatable = false, insertable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date createTime;
 
     // Getters and setters
