@@ -17,4 +17,16 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
                     @Param("StartTime") Date startTime,
                     @Param("EndTime") Date endTime,
                     @Param("Status") String status);
+    @Procedure(name="DeleteTask")
+    void deleteTaskById(@Param("TaskID") int taskId);
+    @Procedure(name="UpdateTaskTime")
+    void updateTaskTime(@Param("TaskID") int taskId,
+                        @Param("StartTime") Date startTime,
+                        @Param("EndTime") Date endTime);
+    @Procedure(name="AssignCategoryToTask")
+    void assignCategoryToTask(@Param("TaskID") int taskId,
+                              @Param("CategoryID") int categoryId);
+    @Procedure(name="UpdateTaskStatus")
+    void updateTaskStatus(@Param("TaskID") int taskId,
+                          @Param("Status") String status);
 }
