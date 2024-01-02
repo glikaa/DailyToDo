@@ -2,13 +2,16 @@ package com.example.tasks.controller;
 
 import com.example.tasks.classes.Task;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.tasks.service.TaskService;
 import com.example.tasks.dto.TaskDto;
 
+import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
 @RestController
 @RequestMapping("/tasks")
@@ -20,24 +23,25 @@ public class TaskController {
     public TaskController(TaskService taskService){
         this.taskService = taskService;
     }
-    @GetMapping("/date")
+    @GetMapping("/byDate")
     public ResponseEntity<List<TaskDto>> getTasksByDate(@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        if (date == null) {
-            date = LocalDate.now(); // Use current date if none is provided
+        if(date == null){
+            date = LocalDate.now();
         }
+
         List<TaskDto> tasks = taskService.getTasksByDate(date);
         return ResponseEntity.ok(tasks);
     }
     @PostMapping
-    public ResponseEntity<String> addTask(@RequestBody TaskDto taskDto){
-        taskService.createTask(
+    public ResponseEntity<TaskDto> addTask(@RequestBody TaskDto taskDto){
+        TaskDto savedTaskDto = taskService.createTask(
                 taskDto.getDescription(),
                 taskDto.getCategoryId(),
                 taskDto.getDate(),
                 taskDto.getStartTime(),
                 taskDto.getEndTime(),
                 taskDto.getStatus());
-        return ResponseEntity.ok("Task created successfully");
+        return ResponseEntity.ok(savedTaskDto);
     }
     @DeleteMapping("/{taskId}")
     public ResponseEntity<String> deleteTask(@PathVariable int taskId) {

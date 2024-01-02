@@ -6,7 +6,10 @@ import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
+
 //call functions from db here
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Integer> {
@@ -29,4 +32,6 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
     @Procedure(name="UpdateTaskStatus")
     void updateTaskStatus(@Param("TaskID") int taskId,
                           @Param("Status") String status);
+
+    List<Task> findByDate(Date date);
 }
