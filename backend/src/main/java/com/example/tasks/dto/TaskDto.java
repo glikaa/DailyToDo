@@ -4,8 +4,8 @@ public class TaskDto {
     private String description;
     private Integer categoryId;
     private Date date;
-    private Date startTime;
-    private Date endTime;
+    private Date startTime; //can be null
+    private Date endTime; //can be null
     private String status;
     // Getters
     public String getDescription() {
