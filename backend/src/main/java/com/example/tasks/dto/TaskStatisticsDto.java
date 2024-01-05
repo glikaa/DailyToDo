@@ -24,7 +24,6 @@ public class TaskStatisticsDto {
     public void setDate(Date date) {
         this.date = date;
     }
-
     public int getCategoryId() {
         return categoryId;
     }
