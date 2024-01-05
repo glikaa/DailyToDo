@@ -2,6 +2,7 @@ package com.example.tasks.otel;
 
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.exporter.jaeger.JaegerGrpcSpanExporter;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
@@ -25,5 +26,18 @@ public class OpenTelemetryConfig {
                 .buildAndRegisterGlobal();
 
         return openTelemetry.getTracer("Daily To Do", "1.0.0");
+    }
+
+    @Bean
+    public SpanExporter jaegerExporter(){
+        return JaegerGrpcSpanExporter.builder()
+                .setEndpoint("http://localhost:14250")
+                .build();
+    }
+
+    @Bean SdkTracerProvider sdkTracerProvider(){
+        return SdkTracerProvider.builder()
+                .addSpanProcessor(SimpleSpanProcessor.create(jaegerExporter()))
+                .build();
     }
 }
