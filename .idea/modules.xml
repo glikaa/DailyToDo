@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Lab-WS23.iml" filepath="$PROJECT_DIR$/.idea/Lab-WS23.iml" />
-      <module fileurl="file://$PROJECT_DIR$/backend/dashboard.iml" filepath="$PROJECT_DIR$/backend/dashboard.iml" />
+      <module fileurl="file://$PROJECT_DIR$/backend/dailyTasks.iml" filepath="$PROJECT_DIR$/backend/dailyTasks.iml" />
     </modules>
   </component>
 </project>
