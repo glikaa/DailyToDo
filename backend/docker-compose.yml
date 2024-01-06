@@ -8,7 +8,7 @@ services:
       - db
       - jaeger
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:sqlserver://db:1433;databaseName=Labor;encrypt=false
+      - SPRING_DATASOURCE_URL=jdbc:sqlserver://db:1433;databaseName=DailyTasks;encrypt=false
       - SPRING_DATASOURCE_USERNAME=sa
       - SPRING_DATASOURCE_PASSWORD=Hochschule123!
 

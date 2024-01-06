@@ -1,3 +1,12 @@
+IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = N'YourDatabaseName')
+    BEGIN
+        CREATE DATABASE DailyTasks;
+    END
+GO
+
+USE DailyTasks;
+GO
+
 -- Create Categories table
 CREATE TABLE Categories (
                             CategoryID INT PRIMARY KEY IDENTITY(1,1),
@@ -33,6 +42,7 @@ CREATE TABLE DailyLimit (
                             Date DATE PRIMARY KEY,
                             TaskLimit INT NOT NULL
 );
+GO
 
 -- Create AddNewTask stored procedure
 CREATE PROCEDURE AddNewTask
@@ -47,6 +57,7 @@ BEGIN
 INSERT INTO Tasks (Description, CategoryID, Date, StartTime, EndTime, Status)
 VALUES (@Description, @CategoryID, @Date, @StartTime, @EndTime, @Status)
 END
+GO
 
 -- Create DeleteTask stored procedure
 CREATE PROCEDURE DeleteTask
@@ -55,6 +66,7 @@ AS
 BEGIN
 DELETE FROM Tasks WHERE TaskID = @TaskID;
 END
+GO
 
 -- Create UpdateTaskTime stored procedure
 CREATE PROCEDURE UpdateTaskTime
@@ -68,6 +80,7 @@ SET StartTime = ISNULL(@StartTime, StartTime),
     EndTime = ISNULL(@EndTime, EndTime)
 WHERE TaskID = @TaskID;
 END
+GO
 
 -- Create AssignCategoryToTask stored procedure
 CREATE PROCEDURE AssignCategoryToTask
@@ -79,6 +92,7 @@ UPDATE Tasks
 SET CategoryID = @CategoryID
 WHERE TaskID = @TaskID;
 END
+GO
 
 -- Create GetTaskSummaryByCategory function
 CREATE FUNCTION GetTaskSummaryByCategory()
@@ -95,6 +109,7 @@ RETURN (
     GROUP BY
         CategoryID
 );
+GO
 
 -- Create SetDailyLimit stored procedure
 CREATE PROCEDURE SetDailyLimit
@@ -114,6 +129,7 @@ INSERT INTO DailyLimit (Date, TaskLimit)
 VALUES (@Date, @TaskLimit)
 END
 END
+GO
 
 -- Sample data for Categories
 INSERT INTO Categories (CategoryName) VALUES
