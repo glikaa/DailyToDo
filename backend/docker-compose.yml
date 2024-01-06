@@ -8,7 +8,7 @@ services:
       - db
       - jaeger
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:sqlserver://localhost:1434;databaseName=Labor;encrypt=false
+      - SPRING_DATASOURCE_URL=jdbc:sqlserver://db:1433;databaseName=Labor;encrypt=false
       - SPRING_DATASOURCE_USERNAME=sa
       - SPRING_DATASOURCE_PASSWORD=Hochschule123!
 
@@ -19,6 +19,14 @@ services:
       ACCEPT_EULA: "Y"
     ports:
       - "1434:1433"
+    volumes:
+      - ./init-db.sql:/usr/src/app/init-db.sql
+    command:
+      - /bin/bash
+      - -c
+      - |
+        /opt/mssql/bin/sqlservr & (sleep 30; /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "Hochschule123!" -i /usr/src/app/init-db.sql; sleep infinity)
+
   jaeger:
     image: jaegertracing/all-in-one:latest
     ports:
