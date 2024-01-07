@@ -1,0 +1,9 @@
+.page-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 100px;
+    box-sizing: border-box;
+    background: linear-gradient(45deg, #9f7bda 30%, #d3aa86 90%);
+}
