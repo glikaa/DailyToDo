@@ -6,9 +6,8 @@ import {
     Grid,
     MenuItem,
     Select,
-    IconButton
+    IconButton, Alert, AlertTitle, Stack
 } from "@mui/material";
-import AddIcon from '@mui/icons-material/Add';
 import axios from 'axios';
 
 const TaskPage = () => {
@@ -20,7 +19,7 @@ const TaskPage = () => {
     const [savedTasksFetched, setSavedTasksFetched] = useState(false);
     const [categoryOptions, setCategoryOptions] = useState([]);
     const [selectedCategories, setSelectedCategories] = useState(tasks.map(() => ''));
-
+    const [showSuccessAlert, setShowSuccessAlert] = useState(false);
 
     useEffect(() => {
         axios.get('http://localhost:8080/daily-limits')
@@ -95,6 +94,9 @@ const TaskPage = () => {
         setTasks(newTasks);
     };
 
+    const closeSuccessAlert = () => {
+        setShowSuccessAlert(false);
+    };
 
     const submitTasks = async () => {
         // backend integration for submitting tasks
@@ -106,7 +108,7 @@ const TaskPage = () => {
                     const response = await axios.post('http://localhost:8080/tasks', task);
                     const createdTask = response.data;
                     console.log('Task submitted successfully', createdTask);
-
+                    setShowSuccessAlert(true);
                     // Assign the category to the task
                     if (task.categoryId) {
                         await axios.patch(`http://localhost:8080/tasks/${createdTask.id}/category`, null, {
@@ -114,6 +116,9 @@ const TaskPage = () => {
                         });
                         console.log('Category assigned to task successfully');
                     }
+                    setShowSuccessAlert(true);
+                    setTimeout(closeSuccessAlert, 2000);
+
                 } catch (error) {
                     console.error('Error submitting task or assigning category', error);
                     if (error.response) {
@@ -133,7 +138,7 @@ const TaskPage = () => {
         <Box className={"page-container"}>
             <Grid>
                 {!limitSet && (
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start'}}>
+                    <div style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start'}}>
                         <p>How many tasks do you want to accomplish today?</p>
                         <TextField
                             type="number"
@@ -141,13 +146,13 @@ const TaskPage = () => {
                             onChange={(e) => setDailyLimit(e.target.value)}
                             variant="outlined"
                         />
-                        <Button style={{marginTop:'10px'}} variant="contained" onClick={handleLimitSubmit}>
+                        <Button style={{marginTop: '10px'}} variant="contained" onClick={handleLimitSubmit}>
                             Set Goal
                         </Button>
                     </div>
                 )}
                 {limitSet && tasks.map((task, index) => (
-                    <div key={index} style={{ display: 'flex', alignItems: 'center' }}>
+                    <div key={index} style={{display: 'flex', alignItems: 'center'}}>
                         <TextField
                             key={index}
                             label={`Task ${index + 1}`}
@@ -157,14 +162,15 @@ const TaskPage = () => {
                             fullWidth
                             margin="normal"
                             InputProps={{
-                                readOnly: tasksSubmitted || savedTasksFetched ,
+                                readOnly: tasksSubmitted,
                             }}
-                            style={{ paddingRight: '16px' }}
+                            style={{paddingRight: '16px'}}
                         />
 
                         <Select
                             value={task.categoryId || ''}
                             onChange={(e) => handleCategoryChange(index, e)}
+                            style={{marginTop: '9px'}}
                         >
                             {categoryOptions.map((category) => (
                                 <MenuItem key={category.id} value={category.id}>{category.name}</MenuItem>
@@ -177,7 +183,13 @@ const TaskPage = () => {
                         save Tasks
                     </Button>
                 )}
-
+                {showSuccessAlert && (
+                    <Stack spacing={2} sx={{ position: 'fixed', bottom: 16, right: 16 }}>
+                        <Alert severity="success"  onClose={closeSuccessAlert} autoHideDuration={3000}>
+                            Tasks saved successfully
+                        </Alert>
+                    </Stack>
+                )}
             </Grid>
         </Box>
     );
