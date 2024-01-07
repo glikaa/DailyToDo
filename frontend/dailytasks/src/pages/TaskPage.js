@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import { Box, Grid } from "@mui/material";
+import {Box, FormControl, Grid, InputLabel, MenuItem, Select, Chip, Autocomplete, OutlinedInput} from "@mui/material";
 import axios from 'axios';
 
 const TaskPage = () => {
@@ -9,6 +9,10 @@ const TaskPage = () => {
     const [limitSet, setLimitSet] = useState(false);
     const [tasks, setTasks] = useState([]);
     const [tasksSubmitted, setTasksSubmitted] = useState(false);
+    const [savedTasks, setSavedTasks] = useState([]);
+    const [savedTasksFetched, setSavedTasksFetched] = useState(false);
+    const [categoryOptions, setCategoryOptions] = useState([]);
+    const [selectedCategories, setSelectedCategories] = useState(tasks.map(() => ''));
 
 
     useEffect(() => {
@@ -24,6 +28,15 @@ const TaskPage = () => {
                     status: 'Pending'
                 })));
                 setLimitSet(true);
+                //already saved tasks:
+                axios.get('http://localhost:8080/tasks/byDate')
+                    .then(savedTasksResponse => {
+                        setSavedTasks(savedTasksResponse.data);
+                        setSavedTasksFetched(true);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching saved tasks', error);
+                    });
             })
             .catch(error => {
                 if (error.response && error.response.status === 404) {
@@ -36,6 +49,17 @@ const TaskPage = () => {
 
     }, []);
 
+    useEffect(() => {
+        // Fetch category options from the backend
+        axios.get('http://localhost:8080/categories')
+            .then(response => {
+                setCategoryOptions(response.data);
+            })
+            .catch(error => {
+                console.error('Error fetching category options', error);
+            });
+    }, []);
+
 
     const handleLimitSubmit = () => {
         axios.post('http://localhost:8080/daily-limits', { taskLimit: dailyLimit })
@@ -46,11 +70,15 @@ const TaskPage = () => {
             .catch(error => console.error('Error setting daily limit', error));
     };
 
-    const handleTaskChange = (index, field, value) => {
-        const updatedTasks = tasks.map((task, i) =>
-            i === index ? { ...task, [field]: value } : task
-        );
-        setTasks(updatedTasks);
+    const handleTaskChange = (index, event) => {
+        const newTasks = [...tasks];
+        newTasks[index] = { ...newTasks[index], description: event.target.value };
+        setTasks(newTasks);
+    };
+    const handleCategoryChange = (index, event) => {
+        const newTasks = [...tasks];
+        newTasks[index].categoryId = event.target.value;
+        setTasks(newTasks);
     };
 
     const submitTasks = () => {
@@ -72,31 +100,59 @@ const TaskPage = () => {
         <Box className={"page-container"}>
             <Grid>
                 {!limitSet && (
-                    <div>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start'}}>
                         <p>How many tasks do you want to accomplish today?</p>
                         <TextField
-                            label="set goal"
                             type="number"
                             value={dailyLimit}
                             onChange={(e) => setDailyLimit(e.target.value)}
                             variant="outlined"
                         />
-                        <Button variant="contained" onClick={handleLimitSubmit}>
-                            Set Limit
+                        <Button style={{marginTop:'10px'}} variant="contained" onClick={handleLimitSubmit}>
+                            Set Goal
                         </Button>
                     </div>
                 )}
-                <p>Your goals for the day: </p>
                 {limitSet && tasks.map((task, index) => (
-                    <TextField
-                        key={index}
-                        label={`Task ${index + 1}`}
-                        value={task.description}
-                        onChange={(e) => handleTaskChange(index, e)}
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                    />
+                    <div key={index} style={{ display: 'flex', alignItems: 'center' }}>
+                        <TextField
+                            key={index}
+                            label={`Task ${index + 1}`}
+                            value={savedTasksFetched ? savedTasks[index].description : task.description}
+                            onChange={(e) => handleTaskChange(index, e)}
+                            variant="outlined"
+                            fullWidth
+                            margin="normal"
+                            InputProps={{
+                                readOnly: tasksSubmitted || savedTasksFetched ,
+                            }}
+                        />
+
+                        <FormControl sx={{ m: 1, width: 300 }}>
+                            <InputLabel id={`category-label-${index}`}>Category</InputLabel>
+                            <Select
+                                labelId={`category-label-${index}`}
+                                id={`category-select-${index}`}
+                                multiple
+                                value={savedTasksFetched && Array.isArray(savedTasks[index].categoryId) ? savedTasks[index].categoryId : []}
+                                onChange={(e) => handleCategoryChange(index, e)}
+                                input={<OutlinedInput id={`category-outlined-${index}`} label="Category" />}
+                                renderValue={(selected) => (
+                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                        {categoryOptions.filter(category => selected.includes(category.id)).map((category) => (
+                                            <Chip key={category.id} label={category.name} />
+                                        ))}
+                                    </Box>
+                                )}
+                            >
+                                {categoryOptions.map((category) => (
+                                    <MenuItem key={category.id} value={category.id}>
+                                        {category.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </div>
                 ))}
                 {limitSet && tasks.length > 0 && (
                     <Button variant="contained" color="primary" onClick={submitTasks}>

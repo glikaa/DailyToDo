@@ -90,4 +90,19 @@ public class TaskController {
         taskService.updateTaskStatus(taskId, status);
         return ResponseEntity.ok("Task status updated successfully");
     }
+    @GetMapping("/{taskId}")
+    public ResponseEntity<TaskDto> getTaskById(@PathVariable int taskId) {
+        Span span = tracer.spanBuilder("TaskController.getTaskById").startSpan();
+        try (Scope scope = span.makeCurrent()) {
+            TaskDto task = taskService.getTaskById(taskId);
+            if (task != null) {
+                return ResponseEntity.ok(task);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } finally {
+            span.end();
+        }
+    }
+
 }

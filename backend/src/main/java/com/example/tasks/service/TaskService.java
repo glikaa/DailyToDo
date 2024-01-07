@@ -8,6 +8,7 @@ import com.example.tasks.repository.TaskRepository;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import io.opentelemetry.api.trace.Tracer;
@@ -96,6 +97,20 @@ public class TaskService {
             return tasks.stream()
                     .map(this::convertToDto)
                     .collect(Collectors.toList());
+        } finally {
+            span.end();
+        }
+    }
+    public TaskDto getTaskById(int taskId) {
+        Span span = tracer.spanBuilder("TaskService.getTaskById").startSpan();
+        try (Scope scope = span.makeCurrent()) {
+            Optional<Task> taskOptional = taskRepository.findById(taskId);
+            if (taskOptional.isPresent()) {
+                Task task = taskOptional.get();
+                return convertToDto(task);
+            } else {
+                return null;
+            }
         } finally {
             span.end();
         }
