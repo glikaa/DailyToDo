@@ -6,10 +6,11 @@ import {
     Grid,
     MenuItem,
     Select,
-    IconButton, Alert, AlertTitle, Stack
+    IconButton, Alert, Stack
 } from "@mui/material";
+import AssessmentIcon from '@mui/icons-material/Assessment';
 import axios from 'axios';
-
+import { Link } from 'react-router-dom';
 const TaskPage = () => {
     const [dailyLimit, setDailyLimit] = useState(0);
     const [limitSet, setLimitSet] = useState(false);
@@ -65,7 +66,6 @@ const TaskPage = () => {
                 console.error('Error fetching category options', error);
             });
     }, []);
-
 
     const handleLimitSubmit = () => {
         axios.post('http://localhost:8080/daily-limits', { taskLimit: dailyLimit })
@@ -183,9 +183,14 @@ const TaskPage = () => {
                         save Tasks
                     </Button>
                 )}
+                <div style={{display: 'flex', justifyContent: 'center', marginTop: '100px'}}>
+                    <IconButton to="/dashboard" component={Link}>
+                        <AssessmentIcon fontSize={"large"}/>
+                    </IconButton>
+                </div>
                 {showSuccessAlert && (
-                    <Stack spacing={2} sx={{ position: 'fixed', bottom: 16, right: 16 }}>
-                        <Alert severity="success"  onClose={closeSuccessAlert} autoHideDuration={3000}>
+                    <Stack spacing={2} sx={{position: 'fixed', bottom: 16, right: 16}}>
+                        <Alert severity="success" onClose={closeSuccessAlert} autoHideDuration={3000}>
                             Tasks saved successfully
                         </Alert>
                     </Stack>
