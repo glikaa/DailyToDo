@@ -183,7 +183,7 @@ const TaskPage = () => {
                         save Tasks
                     </Button>
                 )}
-                <div style={{display: 'flex', justifyContent: 'center', marginTop: '100px'}}>
+                <div style={{display: 'flex', justifyContent: 'center', marginTop: '50px'}}>
                     <IconButton to="/dashboard" component={Link}>
                         <AssessmentIcon fontSize={"large"}/>
                     </IconButton>
